@@ -1,0 +1,6 @@
+{
+    "sourceDirectory": "src",
+    "sharePointSiteUrl": "url do site",
+    "publishingScope": "Major",
+    "authenticationType": "Digest"
+}

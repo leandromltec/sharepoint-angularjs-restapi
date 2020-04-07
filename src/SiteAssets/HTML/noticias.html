@@ -1,0 +1,134 @@
+<html>
+
+<head>
+    <link href="../SiteAssets/CSS/noticias.css" rel="stylesheet" type="text/css" />
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+
+    <!--<script type="text/javascript" src="../SiteAssets/JS/jquery-3.3.1.min.js"></script>-->
+    <script type="text/javascript" src="../SiteAssets/JS/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="../SiteAssets/JS/angular.min.js"></script>
+    <script type="text/javascript" src="../SiteAssets/JS/noticias.js"></script>
+
+
+
+    <script>
+
+        //1º - Criação do módulo e definição do seu nome
+        var app = angular.module("appNoticias", []);
+
+        //2º - Criação do controller do módulog app e definição do nome do controller
+        app.controller("controllerNoticias", function ($scope, $sce) {
+
+            //Ordenação
+            //var parametro = '?$select=Title,datadepublicacao,tipodenoticia, imagemdanoticia&$orderby=datadepublicacao desc'
+
+            var parametro = '?$expand=AttachmentFiles,TaxCatchAll,localidade,autordanoticia&$select=localidade/Title,ID,autordanoticia/Title,Title,datadepublicacao,tipodenoticia,' +
+                'imagemdanoticia,descricao,dias,tags,TaxCatchAll/Term,AttachmentFiles';
+
+            GetItems($scope, $sce, 'Notícias', parametro);
+
+            AddItem($scope, 'Localidade');
+            
+            UpdateItem($scope,'Localidade');
+
+            DeleteItem($scope,'Localidade');
+
+
+        });
+
+    </script>
+</head>
+
+<body>
+    <div class="container" ng-app="appNoticias">
+        <div ng-controller="controllerNoticias">
+            <div>
+                <div>Nome da Localidade: <input type="text" ng-model="textoLocalidade" /> 
+                <input type="button" value="Inserir" ng-click="inserirLocalidade(textoLocalidade)" />
+                </div>
+            </div>
+            <div>
+                <div>
+                Nome da nova Localidade: <input type="text" ng-model="novaLocalidade" />
+                ID da Localidade: <input type="text" ng-model="IDLocadidade" />
+                <input type="button" value="Atualizar" ng-click="atualizarLocalidade(novaLocalidade,IDLocadidade)" />
+            </div>
+            </div>
+            <div>ID Localidade: <input type="text" ng-model="IdLocalidade" />
+            <input type="button" value="Deletar" ng-click="deletarLocalidade(IdLocalidade)" /> </div>
+            <div>
+                <div>
+                    <input type="text" placeholder="Digite o título da Notícia" ng-model="titulo" />
+                    <select ng-model="tipodenoticia" ng-init="tipodenoticia='0'"
+                        ng-change="tidoDeNoticia(tipodenoticia)">
+                        <option value="0">Todas</option>
+                        <option>Normal</option>
+                        <option>Manchete</option>
+                    </select>
+
+                </div>
+
+                <div ng-repeat="noticia in noticias | orderBy: datadepublicacao : true | filter:{Title:titulo}">
+                    <div class="item-noticia">
+                        <div ng-if="noticia.imagemdanoticia == null">
+                            <img src="../SiteAssets/IMG/iconepadraonoticia.png" />
+                        </div>
+                        <div ng-if="noticia.imagemdanoticia != null"><img src="{{noticia.imagemdanoticia.Url}}" /></div>
+                        <div>{{noticia.Title}}</div>
+
+                        <!--<div ng-bind="formatarData('{{noticia.datadepublicacao}}')"></div>-->
+                        <div class="item-data"><img class="icones-noticia"
+                                src="../SiteAssets/IMG/iconecalendario.png" />
+                            <p>{{noticia.datadepublicacao | date: "dd/MM/yyyy"}}</p>
+                        </div>
+                        <div class="item-data"><img class="icones-noticia" src="../SiteAssets/IMG/iconegps.png" />
+                            <p>{{noticia.localidade.Title}}</p>
+                        </div>
+                        <div class="item-data"><img class="icones-noticia" src="../SiteAssets/IMG/iconeautor.png" />
+                            <p>{{noticia.autordanoticia.Title}}</p>
+                        </div>
+                        <div class="item-data">
+                            <img class="icones-noticia" src="../SiteAssets/IMG/iconetempo.png" />
+                            <p>{{noticia.dias | number: 0}} dia(s) atrás</p>
+                        </div>
+
+                        <div class="item-data" ng-if="noticia.TaxCatchAll.results.length > 0">
+                            <img class="icones-noticia" src="../SiteAssets/IMG/iconetag.png" />
+                            <ul ng-repeat="tag in noticia.TaxCatchAll.results">
+                                <p>{{tag.Term}};</p>
+                            </ul>
+                        </div>
+
+                        <div class="item-data" ng-if="noticia.AttachmentFiles.results.length > 0">
+                            <ul ng-repeat="anexo in noticia.AttachmentFiles.results">
+                                <p><a href="{{anexo.ServerRelativeUrl}}" target="_blank">{{anexo.FileName}} </a></p>
+                            </ul>
+                        </div>
+
+                        <div class="item-data">
+                            <label class="label-check">
+                                <input type="checkbox" class="chk-descricao" ng-model="descricao" />
+                                <p>Exibir Descrição</p>
+                                <span class="custom-check"></span>
+                            </label>
+                        </div>
+                        <div class="item-data" ng-show="descricao">
+                            <p ng-bind-html="noticia.descricao"></p>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+    </div>
+
+</body>
+
+</html>
