@@ -1,4 +1,6 @@
 
+/*Desenvolvido por Leandro M. Loureiro
+Linkedin - www.linkedin.com/in/leandro-loureiro-9921b927 */
 
 
 function GetItems($scope, $sce, listName, parametro) {
